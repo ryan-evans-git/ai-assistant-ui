@@ -1,0 +1,204 @@
+# ai-assistant-ui
+
+A drop-in React chat panel for AI assistants. Streams text, renders tool
+calls inline, supports mutation-tool confirmation flows, and stays out of
+your way — every dependency on app state is a prop.
+
+```tsx
+import { ChatBar, ChatPanel } from 'ai-assistant-ui'
+import 'ai-assistant-ui/styles.css'
+```
+
+## What it gives you
+
+- **`<ChatBar />`** — a pill-shaped trigger you drop into a header / top-bar.
+  Opens the panel on click.
+- **`<ChatPanel />`** — the conversation drawer that hangs below it.
+  Renders user / assistant messages, streaming text with a blinking cursor,
+  collapsible tool-call blocks, and (when you ask for it) a confirmation
+  modal for mutation tools.
+- **`<MessageList />`** — same content, no chrome — useful when you want
+  the conversation surface inside a different shell.
+- **`<ToolCallBlock />`** — the collapsible tool-use + tool-result pair.
+- **`<ConfirmToolCall />`** — the confirmation modal, usable standalone.
+
+The package is **transport-agnostic**. It doesn't know about SSE, the
+Anthropic SDK, or any specific MCP runtime. Translate your backend events
+into the [`ChatMessage`](#chatmessage-shape) shape and pump them into
+`<ChatPanel messages={...}>`.
+
+## Install
+
+```bash
+npm install ai-assistant-ui
+```
+
+Peer deps: `react >= 18`, `react-dom >= 18`. Works with React 19.
+
+Then import the stylesheet **once** at your app entry point:
+
+```ts
+import 'ai-assistant-ui/styles.css'
+```
+
+The stylesheet is opt-in — every selector is `.aaui-*`, so it composes
+cleanly with Tailwind, shadcn, or any other system. Override the CSS
+variables in `:root` to re-skin the panel.
+
+## Quickstart
+
+```tsx
+import { useState } from 'react'
+import { ChatBar, ChatPanel, type ChatMessage } from 'ai-assistant-ui'
+import 'ai-assistant-ui/styles.css'
+
+export function HeaderChat() {
+  const [open, setOpen] = useState(false)
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [streaming, setStreaming] = useState(false)
+
+  async function send(content: string) {
+    setMessages((m) => [
+      ...m,
+      { id: crypto.randomUUID(), role: 'user', blocks: [{ type: 'text', text: content }] },
+    ])
+    setStreaming(true)
+    // Pump your SSE stream → blocks here, e.g. fetch('/chat')…
+    setStreaming(false)
+  }
+
+  return (
+    <div className="relative w-full max-w-xl">
+      <ChatBar onClick={() => setOpen(true)} open={open} />
+      <ChatPanel
+        open={open}
+        onClose={() => setOpen(false)}
+        messages={messages}
+        isStreaming={streaming}
+        onSendMessage={send}
+        onCancelStream={() => setStreaming(false)}
+      />
+    </div>
+  )
+}
+```
+
+The panel positions itself absolutely below the bar (`top: 100%`), so the
+parent should be `position: relative` and you can keep the rest of the
+page interactive behind it.
+
+## Pairing with `ai-assistant-client`
+
+This UI was designed alongside
+[ai-assistant-client](https://github.com/ryan-evans-git/ai-assistant-client)
+and its SSE event shape. A minimal adapter:
+
+```ts
+async function sseToBlocks(message: string, onMessages: (m: ChatMessage[]) => void) {
+  const res = await fetch('/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  })
+  const reader = res.body!.pipeThrough(new TextDecoderStream()).getReader()
+  // Parse SSE frames; for each, convert into a block append:
+  //   text_delta     → append text to last assistant text block
+  //   tool_use       → push a new tool_use block
+  //   tool_result    → push a new tool_result block
+  //   turn_complete  → setIsStreaming(false)
+}
+```
+
+The library doesn't ship an SSE parser on purpose — every host has their
+own SSE / fetch / cancellation conventions, and writing 30 lines of
+adapter is cleaner than fighting an opinionated one.
+
+## ChatMessage shape
+
+```ts
+type Role = 'user' | 'assistant'
+
+type ContentBlock =
+  | { type: 'text'; text: string; streaming?: boolean }
+  | { type: 'tool_use'; id: string; name: string; input: unknown; streaming?: boolean }
+  | { type: 'tool_result'; tool_use_id: string; content: string; isError?: boolean }
+
+interface ChatMessage {
+  id: string                // stable id
+  role: Role
+  blocks: ContentBlock[]
+  createdAt?: string        // ISO 8601
+}
+```
+
+`tool_result` blocks are paired with their `tool_use` (by `tool_use_id`)
+and rendered inline inside the `<ToolCallBlock>`.
+
+## Mutation-tool confirmation flow
+
+When your agent emits a "this is a mutation, please confirm" event,
+populate `pendingConfirmation`:
+
+```tsx
+<ChatPanel
+  …
+  pendingConfirmation={{
+    toolUseId: 'tu_1',
+    toolName: 'create_widget',
+    toolDescription: 'Creates a widget owned by the current user.',
+    toolInput: { name: 'wedge' },
+    expiresAtUnix: Math.floor(Date.now() / 1000) + 60,
+    timeoutSeconds: 60,
+  }}
+  onResolveConfirmation={async (req, decision, note) => {
+    await fetch(`/chat/${sessionId}/confirm`, {
+      method: 'POST',
+      body: JSON.stringify({ toolUseId: req.toolUseId, decision, note }),
+    })
+  }}
+/>
+```
+
+The modal closes when the host clears `pendingConfirmation` (typically
+after the SSE stream emits a `tool_confirmation_resolved` event).
+
+## Slash commands
+
+Optional. Pass `onSlashCommand` to intercept any input that starts with
+`/`:
+
+```tsx
+<ChatPanel
+  …
+  onSlashCommand={(raw) => {
+    if (raw === '/clear') {
+      setMessages([])
+      return { consumed: true, message: 'Cleared.', variant: 'success' }
+    }
+    return null              // fall through to onSendMessage
+  }}
+/>
+```
+
+Returning `{ consumed: true }` clears the input without sending; returning
+`null` falls through to the normal send path.
+
+## Companion projects
+
+- [ai-assistant-server](https://github.com/ryan-evans-git/ai-assistant-server)
+  — generic MCP server backed by OpenAPI specs.
+- [ai-assistant-client](https://github.com/ryan-evans-git/ai-assistant-client)
+  — streaming chat client with progressive tool discovery.
+
+## Development
+
+```bash
+npm install
+npm test                     # vitest run
+npm run build                # vite library build → ./dist
+npm run typecheck            # tsc --noEmit
+```
+
+## License
+
+MIT
