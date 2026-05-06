@@ -12,7 +12,7 @@
 # For a live demo, run `npm run dev` locally — Vite's dev server
 # is the natural fit and doesn't benefit from containerization.
 
-FROM node:20-alpine AS build
+FROM node:26-alpine AS build
 
 WORKDIR /app
 
