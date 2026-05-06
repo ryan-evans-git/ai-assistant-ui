@@ -35,5 +35,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    // Vitest's default discovery would otherwise pick up the
+    // Playwright spec under e2e/ — that's a Playwright-runtime
+    // file (browser globals, `page` fixture) and isn't
+    // compatible with jsdom.
+    exclude: ['node_modules', 'dist', 'e2e/**'],
   },
 })
