@@ -23,6 +23,9 @@ RUN --mount=type=cache,target=/root/.npm npm install --no-audit --no-fund
 COPY tsconfig.json vite.config.ts ./
 COPY src ./src
 COPY styles ./styles
+# LICENSE + README are copied into the publishable `dist` stage
+# below, so they need to land in the build stage too.
+COPY LICENSE README.md ./
 
 RUN npm run build
 
