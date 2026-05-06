@@ -29,6 +29,11 @@ COPY LICENSE README.md ./
 
 RUN npm run build
 
+# `node:*-alpine` ships a `node` user (uid 1000); switch to it
+# so the build stage doesn't run as root either. Trivy's DS-0002
+# rule is per-stage.
+USER node
+
 # Stage 2: ship the built artifacts in a tiny image so CI can
 # `docker cp` them or use the layer as a build cache.
 FROM scratch AS dist
@@ -38,3 +43,9 @@ COPY --from=build /app/styles /styles
 COPY --from=build /app/package.json /package.json
 COPY --from=build /app/LICENSE /LICENSE
 COPY --from=build /app/README.md /README.md
+
+# Numeric uid:gid — `scratch` has no /etc/passwd, but Trivy's
+# DS-0002 rule still requires a USER directive. The image is a
+# data-only layer (never executed), so the value just needs to
+# exist + be non-zero.
+USER 65532:65532
