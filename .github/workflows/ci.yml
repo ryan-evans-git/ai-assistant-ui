@@ -1,0 +1,106 @@
+name: ci
+
+# Linux-only matrix on purpose: GitHub-hosted macOS runners are
+# billed at 10× Linux. Pure-TS React component library — no
+# platform-specific behavior.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-typecheck-test:
+    name: lint + typecheck + test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Test on the current LTS + the next one. 18 dropped — its
+        # security support window ended Apr 2025.
+        node: ["20", "22"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install
+        # `npm ci` is reproducible (errors if lockfile is out of
+        # sync) and ~2× faster than `npm install` on cold cache.
+        run: npm ci
+
+      - name: ESLint (skipped if eslint not installed)
+        # `npm run lint` is declared in package.json but eslint
+        # isn't yet in devDependencies. Skip cleanly until it is.
+        # Add `eslint` + an `eslint.config.js` to enforce.
+        run: |
+          if [ -x node_modules/.bin/eslint ]; then
+            npm run lint
+          else
+            echo "::warning::eslint not installed — lint step skipped."
+          fi
+
+      - name: TypeScript (tsc --noEmit)
+        run: npm run typecheck
+
+      - name: Vitest
+        run: npm test
+
+      - name: Build
+        # Confirms the publishable bundle still resolves (vite
+        # build → dist/). Catches breakage in the dts plugin etc.
+        run: npm run build
+
+      - name: npm audit (high+ severity gates merge)
+        # Default (`npm audit`) lists every advisory regardless
+        # of severity. `--audit-level=high` is the gating filter
+        # — moderate/low is too noisy in the React ecosystem.
+        # `--omit=dev` would skip dev-only deps, but vite + vitest
+        # are part of the supply chain that touches source code at
+        # build time, so we keep them in scope.
+        run: npm audit --audit-level=high
+
+  trivy:
+    name: trivy (filesystem + Dockerfile)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trivy filesystem scan
+        # Catches CVEs flagged in the lockfile that npm audit
+        # might miss (Trivy uses a separate advisory DB).
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+          format: table
+
+      - name: Trivy Dockerfile scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: Dockerfile
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+          format: table
+
+  docker-build:
+    name: docker build (sanity)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t ai-assistant-ui:ci .
