@@ -53,8 +53,10 @@ jobs:
       - name: TypeScript (tsc --noEmit)
         run: npm run typecheck
 
-      - name: Vitest
-        run: npm test
+      - name: Vitest (with branch coverage gate ≥90%)
+        # Coverage thresholds (branches/functions/lines/statements ≥90%)
+        # are enforced inside vite.config.ts → test.coverage.thresholds.
+        run: npm run test:coverage
 
       - name: Build
         # Confirms the publishable bundle still resolves (vite

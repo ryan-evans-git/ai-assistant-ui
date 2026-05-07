@@ -40,5 +40,27 @@ export default defineConfig({
     // file (browser globals, `page` fixture) and isn't
     // compatible with jsdom.
     exclude: ['node_modules', 'dist', 'e2e/**'],
+    coverage: {
+      provider: 'v8',
+      // Only count library code in the coverage gate.  The demo app
+      // and Playwright config are exercised by their own runtimes
+      // (Playwright e2e + manual demo run) and don't belong in the
+      // unit-test thresholds.
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.test.{ts,tsx}',
+        'src/index.ts',
+        'src/types.ts',
+        'src/test/**',
+        'src/visuals/types.ts',
+      ],
+      thresholds: {
+        branches: 90,
+        functions: 90,
+        lines: 90,
+        statements: 90,
+      },
+      reporter: ['text', 'html'],
+    },
   },
 })
