@@ -4,7 +4,7 @@ import { ChartVisual } from './ChartVisual'
 import { ImageVisual } from './ImageVisual'
 import { KpiVisual } from './KpiVisual'
 import { TableVisual } from './TableVisual'
-import type { ChartSpec, ImageSpec, KpiSpec, TableSpec } from './types'
+import type { ChartSpec, KpiSpec, TableSpec } from './types'
 
 describe('ChartVisual', () => {
   // Recharts uses `<ResponsiveContainer>` which measures the parent
