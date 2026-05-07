@@ -1,6 +1,7 @@
 export { ChatBar } from './components/ChatBar'
 export { ChatPanel } from './components/ChatPanel'
 export { ConfirmToolCall } from './components/ConfirmToolCall'
+export { ConversationSwitcher } from './components/ConversationSwitcher'
 export { MessageList } from './components/MessageList'
 export { ToolCallBlock } from './components/ToolCallBlock'
 
@@ -18,6 +19,7 @@ export type {
   ChatPanelProps,
   ConfirmationDecision,
   ContentBlock,
+  ConversationSummary,
   Role,
   SlashCommandHandler,
   SlashCommandResult,
@@ -27,6 +29,8 @@ export type {
   ToolUseBlock,
   VisualBlock as VisualBlockType,
 } from './types'
+
+export type { ConversationSwitcherProps } from './components/ConversationSwitcher'
 
 export type {
   ChartSpec,

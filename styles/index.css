@@ -117,10 +117,16 @@
 .aaui-panel__header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   height: 44px;
   padding: 0 12px;
   border-bottom: 1px solid var(--aaui-border);
   flex-shrink: 0;
+  /* Header is the dropdown's anchor parent — `position: relative`
+     so the switcher menu (position: absolute) aligns to the
+     trigger rather than walking up to the panel. */
+  position: relative;
 }
 .aaui-panel__title {
   font-size: 13px;
@@ -608,4 +614,138 @@
   background: #fef2f2;
   border-color: #fca5a5;
   font-size: 12px;
+}
+
+/* ----------------------------------------------------------------- */
+/* Conversation switcher                                             */
+/* ----------------------------------------------------------------- */
+
+.aaui-switcher {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+}
+.aaui-switcher__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--aaui-fg);
+  cursor: pointer;
+  max-width: 100%;
+  min-width: 0;
+}
+.aaui-switcher__trigger:hover,
+.aaui-switcher__trigger[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--aaui-border) 50%, transparent);
+}
+.aaui-switcher__title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+.aaui-switcher__chevron {
+  font-size: 10px;
+  color: var(--aaui-fg-muted);
+}
+
+.aaui-switcher__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 60;
+  width: 280px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--aaui-bg);
+  border: 1px solid var(--aaui-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+}
+.aaui-switcher__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  padding: 7px 9px;
+  border: none;
+  background: transparent;
+  color: var(--aaui-fg);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.aaui-switcher__item:hover {
+  background: color-mix(in srgb, var(--aaui-border) 50%, transparent);
+}
+.aaui-switcher__item--active {
+  background: color-mix(in srgb, var(--aaui-accent) 15%, transparent);
+  font-weight: 500;
+}
+.aaui-switcher__item--action {
+  font-weight: 500;
+  color: var(--aaui-accent);
+}
+.aaui-switcher__plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--aaui-accent) 15%, transparent);
+  color: var(--aaui-accent);
+  font-weight: 700;
+}
+.aaui-switcher__row-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aaui-switcher__delete {
+  border: none;
+  background: transparent;
+  color: var(--aaui-fg-muted);
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 100ms ease, color 100ms ease;
+}
+.aaui-switcher__item:hover .aaui-switcher__delete {
+  opacity: 1;
+}
+.aaui-switcher__delete:hover {
+  color: #dc2626;
+}
+.aaui-switcher__sep {
+  height: 1px;
+  background: var(--aaui-border);
+  margin: 4px 0;
+}
+.aaui-switcher__label {
+  padding: 4px 9px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--aaui-fg-muted);
+}
+.aaui-switcher__empty {
+  padding: 8px 9px;
+  font-size: 12px;
+  color: var(--aaui-fg-muted);
+  font-style: italic;
 }

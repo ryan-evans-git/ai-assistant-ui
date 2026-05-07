@@ -1,5 +1,6 @@
 import type {
   ChatMessage,
+  ConversationSummary,
   ToolConfirmationRequest,
   VisualBlock as VisualBlockType,
 } from '../src/types'
@@ -27,6 +28,13 @@ export interface Scene {
   unreadBadge?: boolean
   messages: ChatMessage[]
   pendingConfirmation?: ToolConfirmationRequest | null
+  /** When provided, renders the ConversationSwitcher in the panel
+   *  header.  Omit to keep the legacy static-title surface. */
+  conversations?: ConversationSummary[]
+  currentConversationId?: string | null
+  /** Open the switcher dropdown on initial render — used for the
+   *  switcher-open screenshot scene. */
+  switcherOpen?: boolean
 }
 
 const ts = (offsetSeconds: number): string =>
@@ -135,6 +143,25 @@ const toolResultDone: ChatMessage[] = [
     ],
   },
 ]
+
+// ----- Conversation list (used by every scene that opts in) --------------
+
+const SAMPLE_CONVERSATIONS: ConversationSummary[] = [
+  {
+    id: 'conv_active',
+    title: 'Past-due invoices for April',
+    updatedAt: ts(0),
+  },
+  { id: 'conv_2', title: 'Monthly revenue trend', updatedAt: ts(-3600) },
+  { id: 'conv_3', title: 'Refund flow for #4733', updatedAt: ts(-86400) },
+  {
+    id: 'conv_4',
+    title: 'Why are signups dipping on weekends?',
+    updatedAt: ts(-2 * 86400),
+  },
+  { id: 'conv_5', title: 'Q1 board prep', updatedAt: ts(-5 * 86400) },
+]
+const ACTIVE_CONVERSATION_ID = 'conv_active'
 
 const pendingConfirmation: ToolConfirmationRequest = {
   toolUseId: 'tu_pending',
@@ -554,6 +581,32 @@ export const scenes: Record<string, Scene> = {
     title: '17. Visual — KPI + chart + table in one response',
     open: true,
     messages: visualMixed(),
+  },
+  'switcher-list': {
+    id: 'switcher-list',
+    title: '18. Conversation switcher — header chip showing current title',
+    open: true,
+    messages: conversation,
+    conversations: SAMPLE_CONVERSATIONS,
+    currentConversationId: ACTIVE_CONVERSATION_ID,
+  },
+  'switcher-open': {
+    id: 'switcher-open',
+    title: '19. Conversation switcher — dropdown open, list of recents',
+    open: true,
+    messages: conversation,
+    conversations: SAMPLE_CONVERSATIONS,
+    currentConversationId: ACTIVE_CONVERSATION_ID,
+    switcherOpen: true,
+  },
+  'switcher-empty': {
+    id: 'switcher-empty',
+    title: '20. Conversation switcher — first run (no prior conversations)',
+    open: true,
+    messages: [],
+    conversations: [],
+    currentConversationId: null,
+    switcherOpen: true,
   },
 }
 

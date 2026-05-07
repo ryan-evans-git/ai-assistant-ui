@@ -37,6 +37,9 @@ component code.
 | Visual — KPI single-stat | [`visual-kpi.png`](docs/screenshots/visual-kpi.png) |
 | Visual — image (data: URI upload) | [`visual-image.png`](docs/screenshots/visual-image.png) |
 | Visual — KPI + chart + table together | [`visual-mixed.png`](docs/screenshots/visual-mixed.png) |
+| Conversation switcher — chip in header | [`switcher-list.png`](docs/screenshots/switcher-list.png) |
+| Conversation switcher — dropdown open | [`switcher-open.png`](docs/screenshots/switcher-open.png) |
+| Conversation switcher — first run (no prior chats) | [`switcher-empty.png`](docs/screenshots/switcher-empty.png) |
 
 ## What it gives you
 
@@ -50,6 +53,11 @@ component code.
   via the `render_visual` meta-tool: charts (bar / line / area / pie /
   donut / scatter via Recharts), tables, KPI single-stats, and images.
   See [`VISUAL_SPEC.md`](VISUAL_SPEC.md) for the wire contract.
+- **`<ConversationSwitcher />`** — header dropdown that lists prior
+  conversations and exposes a "+ New conversation" action. Opt in by
+  passing `conversations`, `currentConversationId`, and a few callbacks
+  to `<ChatPanel>`. The library is conversation-agnostic — the host
+  owns persistence and decides what counts as a "conversation."
 - **`<MessageList />`** — same content, no chrome — useful when you want
   the conversation surface inside a different shell.
 - **`<ToolCallBlock />`** — the collapsible tool-use + tool-result pair.

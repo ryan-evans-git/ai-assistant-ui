@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChatPanelProps } from '../types'
 import { cn } from '../utils/cn'
 import { ConfirmToolCall } from './ConfirmToolCall'
+import { ConversationSwitcher } from './ConversationSwitcher'
 import { MessageList } from './MessageList'
 
 const DEFAULT_PLACEHOLDER = 'Ask anything… type / for commands.'
@@ -21,6 +22,11 @@ export function ChatPanel({
   placeholder = DEFAULT_PLACEHOLDER,
   emptyState,
   className,
+  conversations,
+  currentConversationId = null,
+  onNewConversation,
+  onSelectConversation,
+  onDeleteConversation,
 }: ChatPanelProps) {
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -86,7 +92,17 @@ export function ChatPanel({
       )}
     >
       <header className="aaui-panel__header">
-        <div className="aaui-panel__title">{title}</div>
+        {conversations !== undefined ? (
+          <ConversationSwitcher
+            conversations={conversations}
+            currentConversationId={currentConversationId}
+            onNewConversation={onNewConversation}
+            onSelectConversation={onSelectConversation}
+            onDeleteConversation={onDeleteConversation}
+          />
+        ) : (
+          <div className="aaui-panel__title">{title}</div>
+        )}
         <button
           type="button"
           onClick={onClose}

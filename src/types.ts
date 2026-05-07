@@ -102,6 +102,23 @@ export interface SlashCommandResult {
   variant?: 'info' | 'success' | 'error'
 }
 
+/**
+ * One row in the conversation switcher dropdown.
+ *
+ * The library is conversation-agnostic — the host owns persistence
+ * and decides what counts as a "conversation."  The library just
+ * renders what's passed in and dispatches the new / select / delete
+ * callbacks.
+ */
+export interface ConversationSummary {
+  /** Stable id used by the select / delete callbacks. */
+  id: string
+  /** Display title (auto-generated, user-edited, or "Untitled"). */
+  title: string
+  /** ISO 8601 — used to sort and to render relative timestamps. */
+  updatedAt?: string
+}
+
 export interface ChatPanelProps {
   /** Whether the drawer is open. */
   open: boolean
@@ -127,7 +144,8 @@ export interface ChatPanelProps {
   ) => void | Promise<void>
   /** Optional slash-command interception. */
   onSlashCommand?: SlashCommandHandler
-  /** Optional title. Defaults to "Assistant". */
+  /** Optional title. Defaults to "Assistant".  Hidden when
+   *  ``conversations`` is provided — the switcher chip takes its place. */
   title?: string
   /** Optional textarea placeholder. */
   placeholder?: string
@@ -135,6 +153,23 @@ export interface ChatPanelProps {
   emptyState?: React.ReactNode
   /** Optional className applied to the drawer root. */
   className?: string
+
+  // -- Conversation switcher (all optional) ---------------------------
+  /**
+   * Pass a list to render the conversation switcher in the panel
+   * header (where the static title would otherwise sit).  Omit
+   * (or pass ``undefined``) to keep the legacy single-conversation
+   * surface — back-compat default.
+   */
+  conversations?: ConversationSummary[]
+  /** ``null`` means "new, unsaved conversation". */
+  currentConversationId?: string | null
+  /** Fired when the user picks "+ New conversation". */
+  onNewConversation?: () => void
+  /** Fired when the user picks an existing conversation in the menu. */
+  onSelectConversation?: (id: string) => void
+  /** When provided, a small trash icon appears on each conversation row. */
+  onDeleteConversation?: (id: string) => void
 }
 
 export interface ChatBarProps {

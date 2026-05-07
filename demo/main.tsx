@@ -1,4 +1,4 @@
-import { StrictMode, useState } from 'react'
+import { StrictMode, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ChatBar, ChatPanel } from '../src'
 import '../styles/index.css'
@@ -16,9 +16,28 @@ function Demo() {
   const scene = scenes[sceneId]
   const [open, setOpen] = useState(scene.open)
   const [pending, setPending] = useState(scene.pendingConfirmation ?? null)
+  const [currentConversationId, setCurrentConversationId] = useState<
+    string | null | undefined
+  >(scene.currentConversationId)
+  const rootRef = useRef<HTMLDivElement | null>(null)
+
+  // For the switcher-open screenshot scene we synthesize a click on
+  // the dropdown trigger after first paint.  Doing it via DOM rather
+  // than threading an `initialOpen` prop into the library keeps the
+  // switcher's API surface minimal — open state is internal.
+  useEffect(() => {
+    if (!scene.switcherOpen) return
+    const t = window.setTimeout(() => {
+      const trigger = rootRef.current?.querySelector<HTMLButtonElement>(
+        '[data-testid="conversation-switcher-trigger"]',
+      )
+      trigger?.click()
+    }, 80)
+    return () => window.clearTimeout(t)
+  }, [scene.switcherOpen])
 
   return (
-    <div className="demo-shell">
+    <div className="demo-shell" ref={rootRef}>
       <header className="demo-shell__header">
         <div className="demo-shell__brand">acme · billing</div>
         <div className="demo-shell__bar">
@@ -55,6 +74,13 @@ function Demo() {
               pendingConfirmation={pending}
               onResolveConfirmation={() => setPending(null)}
               title="Acme assistant"
+              conversations={scene.conversations}
+              currentConversationId={currentConversationId}
+              onNewConversation={() => setCurrentConversationId(null)}
+              onSelectConversation={(id) => setCurrentConversationId(id)}
+              onDeleteConversation={() => {
+                /* no-op for screenshots */
+              }}
             />
           </div>
         </div>
