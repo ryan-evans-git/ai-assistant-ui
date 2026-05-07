@@ -20,7 +20,10 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        viewport: { width: 1280, height: 800 },
+        // 1280×1400: wide enough for a real-app header, tall enough
+        // to keep the chat panel from clipping a 280px-tall chart
+        // visual + its accompanying message bubbles in one frame.
+        viewport: { width: 1280, height: 1400 },
         deviceScaleFactor: 2, // 2x for crisp screenshots on retina displays.
       },
     },

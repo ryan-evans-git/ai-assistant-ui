@@ -117,10 +117,16 @@
 .aaui-panel__header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   height: 44px;
   padding: 0 12px;
   border-bottom: 1px solid var(--aaui-border);
   flex-shrink: 0;
+  /* Header is the dropdown's anchor parent — `position: relative`
+     so the switcher menu (position: absolute) aligns to the
+     trigger rather than walking up to the panel. */
+  position: relative;
 }
 .aaui-panel__title {
   font-size: 13px;
@@ -468,4 +474,278 @@
 .aaui-skeleton--narrow { width: 50%; }
 @keyframes aaui-shimmer {
   to { background-position: -200% 0; }
+}
+
+/* ----------------------------------------------------------------- */
+/* Visuals                                                           */
+/* ----------------------------------------------------------------- */
+
+.aaui-visual {
+  margin: 8px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--aaui-border);
+  border-radius: 8px;
+  background: var(--aaui-surface);
+  max-width: 100%;
+  /* The assistant message bubble is align-items: flex-start, which
+     makes children shrink to their intrinsic size — fine for text,
+     but charts/tables have no intrinsic width and would collapse to
+     near-zero.  align-self: stretch lets them fill the row. */
+  align-self: stretch;
+  width: 100%;
+  /* Charts (especially pie/donut) need real width to render
+     readably.  600px hits a reasonable balance between a narrow
+     side drawer and a full-page panel. */
+  min-width: min(600px, 100%);
+  box-sizing: border-box;
+}
+.aaui-visual--kpi {
+  /* KPI tiles are intentionally inline-flex with their own
+     min-width; let them keep that intrinsic size. */
+  align-self: flex-start;
+  width: auto;
+  min-width: 220px;
+}
+.aaui-visual__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--aaui-fg);
+  margin-bottom: 8px;
+}
+.aaui-visual__caption {
+  font-size: 11px;
+  color: var(--aaui-fg-muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Chart */
+.aaui-visual__chart-frame {
+  width: 100%;
+  height: 280px;
+}
+.aaui-visual--chart .recharts-text {
+  font-size: 11px;
+  fill: var(--aaui-fg-muted);
+}
+
+/* Table */
+.aaui-visual__table-frame {
+  overflow-x: auto;
+}
+.aaui-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.aaui-table__th {
+  font-weight: 600;
+  color: var(--aaui-fg);
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--aaui-border);
+  background: color-mix(in srgb, var(--aaui-border) 35%, transparent);
+}
+.aaui-table__row + .aaui-table__row .aaui-table__td {
+  border-top: 1px solid var(--aaui-border);
+}
+.aaui-table__td {
+  padding: 7px 10px;
+  color: var(--aaui-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* KPI */
+.aaui-kpi {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  padding: 14px 16px;
+}
+.aaui-kpi__label {
+  font-size: 11px;
+  color: var(--aaui-fg-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.aaui-kpi__value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.aaui-kpi__value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--aaui-fg);
+  font-variant-numeric: tabular-nums;
+}
+.aaui-kpi__unit {
+  font-size: 13px;
+  color: var(--aaui-fg-muted);
+}
+.aaui-kpi__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.aaui-kpi__trend--up { color: #16a34a; }
+.aaui-kpi__trend--down { color: #dc2626; }
+.aaui-kpi__trend--flat { color: var(--aaui-fg-muted); }
+.aaui-kpi__trend-period {
+  color: var(--aaui-fg-muted);
+  font-weight: 400;
+}
+.aaui-kpi--good { border-color: #86efac; }
+.aaui-kpi--warn { border-color: #fcd34d; }
+.aaui-kpi--bad  { border-color: #fca5a5; }
+
+/* Image */
+.aaui-visual--image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+.aaui-visual--image-error,
+.aaui-visual--error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fca5a5;
+  font-size: 12px;
+}
+
+/* ----------------------------------------------------------------- */
+/* Conversation switcher                                             */
+/* ----------------------------------------------------------------- */
+
+.aaui-switcher {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+}
+.aaui-switcher__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--aaui-fg);
+  cursor: pointer;
+  max-width: 100%;
+  min-width: 0;
+}
+.aaui-switcher__trigger:hover,
+.aaui-switcher__trigger[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--aaui-border) 50%, transparent);
+}
+.aaui-switcher__title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+.aaui-switcher__chevron {
+  font-size: 10px;
+  color: var(--aaui-fg-muted);
+}
+
+.aaui-switcher__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 60;
+  width: 280px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--aaui-bg);
+  border: 1px solid var(--aaui-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+}
+.aaui-switcher__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  padding: 7px 9px;
+  border: none;
+  background: transparent;
+  color: var(--aaui-fg);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.aaui-switcher__item:hover {
+  background: color-mix(in srgb, var(--aaui-border) 50%, transparent);
+}
+.aaui-switcher__item--active {
+  background: color-mix(in srgb, var(--aaui-accent) 15%, transparent);
+  font-weight: 500;
+}
+.aaui-switcher__item--action {
+  font-weight: 500;
+  color: var(--aaui-accent);
+}
+.aaui-switcher__plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--aaui-accent) 15%, transparent);
+  color: var(--aaui-accent);
+  font-weight: 700;
+}
+.aaui-switcher__row-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aaui-switcher__delete {
+  border: none;
+  background: transparent;
+  color: var(--aaui-fg-muted);
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 100ms ease, color 100ms ease;
+}
+.aaui-switcher__item:hover .aaui-switcher__delete {
+  opacity: 1;
+}
+.aaui-switcher__delete:hover {
+  color: #dc2626;
+}
+.aaui-switcher__sep {
+  height: 1px;
+  background: var(--aaui-border);
+  margin: 4px 0;
+}
+.aaui-switcher__label {
+  padding: 4px 9px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--aaui-fg-muted);
+}
+.aaui-switcher__empty {
+  padding: 8px 9px;
+  font-size: 12px;
+  color: var(--aaui-fg-muted);
+  font-style: italic;
 }
