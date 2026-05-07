@@ -47,7 +47,16 @@ export interface ToolResultBlock {
   isError?: boolean
 }
 
-export type ContentBlock = TextBlock | ToolUseBlock | ToolResultBlock
+// Re-export the visual block shape from its dedicated module so the
+// public `ContentBlock` union stays a single import surface.
+export type { VisualBlock } from './visuals/types'
+import type { VisualBlock } from './visuals/types'
+
+export type ContentBlock =
+  | TextBlock
+  | ToolUseBlock
+  | ToolResultBlock
+  | VisualBlock
 
 export interface ChatMessage {
   /** Stable id (uuid, db id, anything unique within the list). */

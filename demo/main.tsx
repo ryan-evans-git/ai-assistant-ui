@@ -22,6 +22,9 @@ function Demo() {
       <header className="demo-shell__header">
         <div className="demo-shell__brand">acme · billing</div>
         <div className="demo-shell__bar">
+          {/* The bar-wrap is the positioning anchor for the panel.
+              The library's `.aaui-panel` is `position: absolute;
+              top: 100%`, so it drops down from this wrapper. */}
           <div className="demo-shell__bar-wrap">
             <ChatBar
               onClick={() => setOpen((v) => !v)}
@@ -37,6 +40,22 @@ function Demo() {
                 1
               </span>
             )}
+            <ChatPanel
+              open={open}
+              onClose={() => setOpen(false)}
+              messages={scene.messages}
+              isStreaming={scene.isStreaming ?? false}
+              isLoading={scene.isLoading ?? false}
+              onSendMessage={() => {
+                /* no-op for screenshots */
+              }}
+              onCancelStream={() => {
+                /* no-op for screenshots */
+              }}
+              pendingConfirmation={pending}
+              onResolveConfirmation={() => setPending(null)}
+              title="Acme assistant"
+            />
           </div>
         </div>
       </header>
@@ -50,23 +69,6 @@ function Demo() {
           <p>Pretend this is the host application.</p>
         </div>
       </main>
-
-      <ChatPanel
-        open={open}
-        onClose={() => setOpen(false)}
-        messages={scene.messages}
-        isStreaming={scene.isStreaming ?? false}
-        isLoading={scene.isLoading ?? false}
-        onSendMessage={() => {
-          /* no-op for screenshots */
-        }}
-        onCancelStream={() => {
-          /* no-op for screenshots */
-        }}
-        pendingConfirmation={pending}
-        onResolveConfirmation={() => setPending(null)}
-        title="Acme assistant"
-      />
     </div>
   )
 }

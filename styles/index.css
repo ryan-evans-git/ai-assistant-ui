@@ -469,3 +469,143 @@
 @keyframes aaui-shimmer {
   to { background-position: -200% 0; }
 }
+
+/* ----------------------------------------------------------------- */
+/* Visuals                                                           */
+/* ----------------------------------------------------------------- */
+
+.aaui-visual {
+  margin: 8px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--aaui-border);
+  border-radius: 8px;
+  background: var(--aaui-surface);
+  max-width: 100%;
+  /* The assistant message bubble is align-items: flex-start, which
+     makes children shrink to their intrinsic size — fine for text,
+     but charts/tables have no intrinsic width and would collapse to
+     near-zero.  align-self: stretch lets them fill the row. */
+  align-self: stretch;
+  width: 100%;
+  /* Charts (especially pie/donut) need real width to render
+     readably.  600px hits a reasonable balance between a narrow
+     side drawer and a full-page panel. */
+  min-width: min(600px, 100%);
+  box-sizing: border-box;
+}
+.aaui-visual--kpi {
+  /* KPI tiles are intentionally inline-flex with their own
+     min-width; let them keep that intrinsic size. */
+  align-self: flex-start;
+  width: auto;
+  min-width: 220px;
+}
+.aaui-visual__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--aaui-fg);
+  margin-bottom: 8px;
+}
+.aaui-visual__caption {
+  font-size: 11px;
+  color: var(--aaui-fg-muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Chart */
+.aaui-visual__chart-frame {
+  width: 100%;
+  height: 280px;
+}
+.aaui-visual--chart .recharts-text {
+  font-size: 11px;
+  fill: var(--aaui-fg-muted);
+}
+
+/* Table */
+.aaui-visual__table-frame {
+  overflow-x: auto;
+}
+.aaui-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.aaui-table__th {
+  font-weight: 600;
+  color: var(--aaui-fg);
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--aaui-border);
+  background: color-mix(in srgb, var(--aaui-border) 35%, transparent);
+}
+.aaui-table__row + .aaui-table__row .aaui-table__td {
+  border-top: 1px solid var(--aaui-border);
+}
+.aaui-table__td {
+  padding: 7px 10px;
+  color: var(--aaui-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* KPI */
+.aaui-kpi {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  padding: 14px 16px;
+}
+.aaui-kpi__label {
+  font-size: 11px;
+  color: var(--aaui-fg-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.aaui-kpi__value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.aaui-kpi__value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--aaui-fg);
+  font-variant-numeric: tabular-nums;
+}
+.aaui-kpi__unit {
+  font-size: 13px;
+  color: var(--aaui-fg-muted);
+}
+.aaui-kpi__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.aaui-kpi__trend--up { color: #16a34a; }
+.aaui-kpi__trend--down { color: #dc2626; }
+.aaui-kpi__trend--flat { color: var(--aaui-fg-muted); }
+.aaui-kpi__trend-period {
+  color: var(--aaui-fg-muted);
+  font-weight: 400;
+}
+.aaui-kpi--good { border-color: #86efac; }
+.aaui-kpi--warn { border-color: #fcd34d; }
+.aaui-kpi--bad  { border-color: #fca5a5; }
+
+/* Image */
+.aaui-visual--image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+.aaui-visual--image-error,
+.aaui-visual--error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fca5a5;
+  font-size: 12px;
+}

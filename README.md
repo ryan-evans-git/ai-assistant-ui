@@ -29,6 +29,14 @@ component code.
 | Tool call in flight | [`tool-in-flight.png`](docs/screenshots/tool-in-flight.png) |
 | Tool result + follow-up | [`tool-result.png`](docs/screenshots/tool-result.png) |
 | Mutation confirmation | [`confirmation.png`](docs/screenshots/confirmation.png) |
+| Visual — bar chart | [`visual-bar.png`](docs/screenshots/visual-bar.png) |
+| Visual — line chart | [`visual-line.png`](docs/screenshots/visual-line.png) |
+| Visual — stacked area | [`visual-area.png`](docs/screenshots/visual-area.png) |
+| Visual — donut chart | [`visual-pie.png`](docs/screenshots/visual-pie.png) |
+| Visual — data table | [`visual-table.png`](docs/screenshots/visual-table.png) |
+| Visual — KPI single-stat | [`visual-kpi.png`](docs/screenshots/visual-kpi.png) |
+| Visual — image (data: URI upload) | [`visual-image.png`](docs/screenshots/visual-image.png) |
+| Visual — KPI + chart + table together | [`visual-mixed.png`](docs/screenshots/visual-mixed.png) |
 
 ## What it gives you
 
@@ -38,6 +46,10 @@ component code.
   Renders user / assistant messages, streaming text with a blinking cursor,
   collapsible tool-call blocks, and (when you ask for it) a confirmation
   modal for mutation tools.
+- **`<VisualBlock />`** — renders structured visuals the assistant emits
+  via the `render_visual` meta-tool: charts (bar / line / area / pie /
+  donut / scatter via Recharts), tables, KPI single-stats, and images.
+  See [`VISUAL_SPEC.md`](VISUAL_SPEC.md) for the wire contract.
 - **`<MessageList />`** — same content, no chrome — useful when you want
   the conversation surface inside a different shell.
 - **`<ToolCallBlock />`** — the collapsible tool-use + tool-result pair.

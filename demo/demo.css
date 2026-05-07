@@ -55,6 +55,18 @@ body {
   width: 100%;
 }
 
+/* The library's `.aaui-panel` is `position: absolute; top: 100%;
+   left: 0; right: 0` — it would inherit the bar-wrap's width
+   (~420px), too narrow for chart visuals.  Override to a fixed
+   panel width anchored to the bar's right edge, growing to the
+   left like a typical header dropdown. */
+.demo-shell__bar-wrap > .aaui-panel {
+  left: auto;
+  right: 0;
+  width: 720px;
+  max-width: calc(100vw - 56px);
+}
+
 .demo-shell__badge {
   position: absolute;
   top: -6px;
@@ -106,4 +118,12 @@ body {
   text-align: center;
   color: #8a90a0;
   background: #ffffff;
+}
+
+/* The lib's `.aaui-panel` defaults to 500px tall — fine for short
+   exchanges, but the screenshot scenes include chart visuals
+   (~280px each) and need more room so the chart + surrounding
+   bubbles fit in one frame.  Applies only to the demo. */
+.demo-shell__bar-wrap > .aaui-panel {
+  height: 760px;
 }
