@@ -27,7 +27,7 @@ jobs:
         # security support window ended Apr 2025.
         node: ["20", "22"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v4
         with:
@@ -83,7 +83,7 @@ jobs:
     name: trivy (filesystem + Dockerfile)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Trivy filesystem scan
         # Catches CVEs flagged in the lockfile that npm audit
@@ -110,6 +110,6 @@ jobs:
     name: docker build (sanity)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build image
         run: docker build -t ai-assistant-ui:ci .
