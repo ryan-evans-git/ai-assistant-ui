@@ -63,6 +63,13 @@ jobs:
         # build → dist/). Catches breakage in the dts plugin etc.
         run: npm run build
 
+      - name: License check (block GPL/AGPL/SSPL/BUSL/Elastic)
+        # Substring match against each dep's license string.  Specific
+        # GPL variants picked so LGPL (weak copyleft, acceptable for
+        # dynamic linking) isn't blocked.  --production skips dev-only
+        # tooling so a future LGPL test runner wouldn't fail this gate.
+        run: npx --yes license-checker --production --failOn 'GPL-2.0;GPL-3.0;AGPL;SSPL;BUSL;Elastic License;Commons Clause'
+
       - name: npm audit (high+ severity gates merge)
         # Default (`npm audit`) lists every advisory regardless
         # of severity. `--audit-level=high` is the gating filter
