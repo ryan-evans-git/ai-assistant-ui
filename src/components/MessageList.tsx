@@ -5,8 +5,10 @@ import type {
   TextBlock,
   ToolResultBlock,
   ToolUseBlock,
+  VisualBlock as VisualBlockType,
 } from '../types'
 import { cn } from '../utils/cn'
+import { VisualBlock } from '../visuals/VisualBlock'
 import { ToolCallBlock } from './ToolCallBlock'
 
 interface Props {
@@ -97,7 +99,15 @@ interface MessageRowProps {
 function MessageRow({ message, resultsByToolId }: MessageRowProps) {
   const visibleBlocks = message.blocks.filter(
     // tool_results are rendered inside ToolCallBlock, not standalone.
-    (b): b is TextBlock | ToolUseBlock => b.type !== 'tool_result',
+    // tool_use of name "render_visual" is hidden because the
+    // VisualBlock that the host appends from the corresponding
+    // `visual` event is the user-facing form — showing both would
+    // be noise.
+    (b): b is TextBlock | ToolUseBlock | VisualBlockType => {
+      if (b.type === 'tool_result') return false
+      if (b.type === 'tool_use' && b.name === 'render_visual') return false
+      return true
+    },
   )
 
   if (visibleBlocks.length === 0) return null
@@ -142,6 +152,9 @@ function BlockRenderer({ block, resultsByToolId }: BlockRendererProps) {
         result={resultsByToolId.get(block.id)}
       />
     )
+  }
+  if (block.type === 'visual') {
+    return <VisualBlock block={block} />
   }
   return null
 }

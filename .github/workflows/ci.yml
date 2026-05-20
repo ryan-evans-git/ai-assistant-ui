@@ -27,9 +27,9 @@ jobs:
         # security support window ended Apr 2025.
         node: ["20", "22"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           cache: npm
@@ -53,13 +53,22 @@ jobs:
       - name: TypeScript (tsc --noEmit)
         run: npm run typecheck
 
-      - name: Vitest
-        run: npm test
+      - name: Vitest (with branch coverage gate ≥90%)
+        # Coverage thresholds (branches/functions/lines/statements ≥90%)
+        # are enforced inside vite.config.ts → test.coverage.thresholds.
+        run: npm run test:coverage
 
       - name: Build
         # Confirms the publishable bundle still resolves (vite
         # build → dist/). Catches breakage in the dts plugin etc.
         run: npm run build
+
+      - name: License check (block GPL/AGPL/SSPL/BUSL/Elastic)
+        # Substring match against each dep's license string.  Specific
+        # GPL variants picked so LGPL (weak copyleft, acceptable for
+        # dynamic linking) isn't blocked.  --production skips dev-only
+        # tooling so a future LGPL test runner wouldn't fail this gate.
+        run: npx --yes license-checker --production --failOn 'GPL-2.0;GPL-3.0;AGPL;SSPL;BUSL;Elastic License;Commons Clause'
 
       - name: npm audit (high+ severity gates merge)
         # Default (`npm audit`) lists every advisory regardless
@@ -74,12 +83,12 @@ jobs:
     name: trivy (filesystem + Dockerfile)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Trivy filesystem scan
         # Catches CVEs flagged in the lockfile that npm audit
         # might miss (Trivy uses a separate advisory DB).
-        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
@@ -89,7 +98,7 @@ jobs:
           format: table
 
       - name: Trivy Dockerfile scan
-        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: config
           scan-ref: Dockerfile
@@ -101,6 +110,6 @@ jobs:
     name: docker build (sanity)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build image
         run: docker build -t ai-assistant-ui:ci .
