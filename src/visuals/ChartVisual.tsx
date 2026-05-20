@@ -126,7 +126,11 @@ function renderArea(spec: ChartSpec, colorFor: (i: number) => string) {
       <XAxis dataKey={spec.x_key} label={axisLabel(spec.x_label, 'bottom')} />
       <YAxis label={axisLabel(spec.y_label, 'left')} />
       <Tooltip />
-      <Legend />
+      {/* iconType="rect" so the legend shows filled colored squares
+          (the area fills) instead of Recharts' default line-with-dot
+          icon, which makes a stacked-area chart read as a line chart
+          in the legend. */}
+      <Legend iconType="rect" />
       {(spec.y_keys ?? []).map((k, i) => (
         <Area
           key={k}
@@ -134,7 +138,11 @@ function renderArea(spec: ChartSpec, colorFor: (i: number) => string) {
           dataKey={k}
           stroke={colorFor(i)}
           fill={colorFor(i)}
-          fillOpacity={0.25}
+          // 0.45 (was 0.25) — at 0.25 the stacked bands all read as
+          // washed-out pastels indistinguishable from each other in
+          // a screenshot.  0.45 keeps the bands clearly differentiated
+          // while still letting the gridlines bleed through.
+          fillOpacity={0.45}
           stackId={spec.stacked ? 'all' : undefined}
           // See Bar above for the rationale.
           isAnimationActive={false}
