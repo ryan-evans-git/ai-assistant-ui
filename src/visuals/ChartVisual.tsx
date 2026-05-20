@@ -82,6 +82,13 @@ function renderBar(spec: ChartSpec, colorFor: (i: number) => string) {
           dataKey={k}
           fill={colorFor(i)}
           stackId={spec.stacked ? 'all' : undefined}
+          // Recharts' animation is JS-driven (react-smooth /
+          // requestAnimationFrame), not CSS, so the
+          // global ``animation-duration: 0`` style we inject
+          // for screenshots doesn't disable it.  Turn it off
+          // explicitly so static snapshots capture the full
+          // series, not a partially-drawn frame.
+          isAnimationActive={false}
         />
       ))}
     </BarChart>
@@ -104,6 +111,8 @@ function renderLine(spec: ChartSpec, colorFor: (i: number) => string) {
           stroke={colorFor(i)}
           dot={{ r: 3 }}
           strokeWidth={2}
+          // See Bar above for the rationale.
+          isAnimationActive={false}
         />
       ))}
     </LineChart>
@@ -127,6 +136,8 @@ function renderArea(spec: ChartSpec, colorFor: (i: number) => string) {
           fill={colorFor(i)}
           fillOpacity={0.25}
           stackId={spec.stacked ? 'all' : undefined}
+          // See Bar above for the rationale.
+          isAnimationActive={false}
         />
       ))}
     </AreaChart>
@@ -144,7 +155,12 @@ function renderScatter(spec: ChartSpec, colorFor: (i: number) => string) {
       <XAxis dataKey={spec.x_key} label={axisLabel(spec.x_label, 'bottom')} />
       <YAxis dataKey={yKey} label={axisLabel(spec.y_label, 'left')} />
       <Tooltip />
-      <Scatter data={spec.data} fill={colorFor(0)} />
+      <Scatter
+        data={spec.data}
+        fill={colorFor(0)}
+        // See Bar above for the rationale.
+        isAnimationActive={false}
+      />
     </ScatterChart>
   )
 }
@@ -171,9 +187,11 @@ function renderPie(spec: ChartSpec, colorFor: (i: number) => string) {
         cy="50%"
         outerRadius={outerRadius}
         innerRadius={innerRadius}
-        label={(entry: { label?: string; name?: string }) =>
-          entry.label ?? entry.name ?? ''
-        }
+        // No outside-callout labels: they collide with the legend
+        // (same text strings stacked on top of each other at
+        // small chart heights) and clip the chart frame at the
+        // top.  The legend already lists every bucket, and the
+        // tooltip shows per-slice values on hover.
         isAnimationActive={false}
       >
         {(spec.data as Array<unknown>).map((_, i) => (

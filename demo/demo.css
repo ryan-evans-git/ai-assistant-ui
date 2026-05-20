@@ -133,10 +133,27 @@ body {
   background: #ffffff;
 }
 
-/* The lib's `.aaui-panel` defaults to 500px tall — fine for short
-   exchanges, but the screenshot scenes include chart visuals
-   (~280px each) and need more room so the chart + surrounding
-   bubbles fit in one frame.  Applies only to the demo. */
-.demo-shell__bar-wrap > .aaui-panel {
-  height: 760px;
+/* The lib's `.aaui-panel` defaults to a fixed 500px tall — fine
+   for short exchanges, but the screenshot scenes vary wildly:
+   short empty-state shots need ~400px; the visual-mixed scene
+   (KPI + bar chart + three-row table + narration) needs ~950px.
+   Forcing a single tall height creates huge empty space in
+   short scenes AND extends the page in *closed*-panel scenes
+   (the absolutely-positioned panel still counts toward
+   scrollHeight), so ``fullPage`` captures a tall mostly-empty
+   image.
+   Content-driven sizing fixes both: ``height: auto`` lets the
+   panel grow with its contents; ``max-height`` caps the worst
+   case; and the closed-panel modifier collapses the panel out
+   of flow entirely so notifying/collapsed scenes stay short. */
+.demo-shell__bar-wrap > .aaui-panel.aaui-panel--open {
+  height: auto;
+  max-height: 1100px;
+}
+.demo-shell__bar-wrap > .aaui-panel.aaui-panel--closed {
+  height: 0;
+  /* keep visibility:hidden semantics from the lib but make
+     sure the element doesn't extend the document scrollHeight. */
+  max-height: 0;
+  overflow: hidden;
 }
