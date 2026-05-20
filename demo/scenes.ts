@@ -387,13 +387,14 @@ const visualKpi = (): ChatMessage[] => [
   },
 ]
 
-// Small 32×20 PNG: four ascending blue bars on a grey background.
-// Stand-in for an uploaded chart image in screenshots — the 1×1
-// transparent placeholder we shipped originally was technically
-// correct but rendered as an empty box, which read in screenshots
-// as a broken image rather than a successful upload preview.
+// 320×200 PNG that reads as a board-deck quarterly revenue bar chart
+// (four ascending blue bars + gridlines on grey).  Generated at the
+// renderer's native target size so it doesn't pixelate when scaled
+// up — an earlier 32×20 version did, which read as a broken upload
+// rather than a real preview.  The 1×1 transparent before that
+// rendered as an empty box; same problem.
 const TINY_PNG_DATA_URI =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAUCAIAAABj86gYAAAALUlEQVR42mP4/OUbTRHDqAXDxwLrJuxoBFqAy6ARaAGpBg1jC6hl0KgFI9gCAJCBoaxYlm0FAAAAAElFTkSuQmCC'
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAADICAIAAAAWZq/8AAACuElEQVR42u3dsQ2DMBRFUS+TKTJONskMqbIAa7lwZUoiakZAiij8zJHOBBE371dQtt8OhCp+AhAwIGBAwCBgQMCAgAEBg4ABAQMCBgEDAgYEDAgYBAwIGBAwIGAQMCBgQMAgYEDAgIABAYOAAQEDAgYEDAIGBAwIGAQMCBgQMCBgEDAgYOCSgGvrQCgLDE5oQMCAgEHAgIABAQMCBgEDAgYEDAIGBAwIGBAw43i81skImHsF/HzvMxEwAhawgBGwgEHAAgYBCxgBC1jACFjAIGABI2ABCxgBC1jACFjAIGABI2ABCxgBCxgELGAQsIARsIAFjIAFDAIWMAIWsIARsIAFjIAFDAIWMAIW8B8B19aBUBYYC+yEBgELGAELWMAIWMDktDEZAQvYuCFgBIyAEbCABYyABSxgASNgBCxgASNgAQtYwIoSMAJGwAhYwAJGwAIWsIARMAJGwAhYwAJGwAIWsIARMAIWsIARsIAFLGAEjIARMAIWsIARsIAFLGAEjIARcFgb3pmOgI0bAhawgBGwgAWMgAWMgAUsYAQsYAEjYASMgAWMgAUsYAR8HnBtHQhlgS0wTmgBI2ABCxgBC1jACBgBI2ABI2ABCxgBC1jACFjAIGABI2ABCxgBI2AELGAELGABI2ABCxgBC9jDioAFjIAFLGAELGABI2Af/vPhPwHfOWAPAQIWMAhYwCBgASNgAYOABQwCFjAIWMAIWMAgYAGDgAWMgAUMAhYwCFjAIGABI2ABg4AFDAIWMAhYwAj4yoBr60AoCwxOaAEjYAGDgAUMAhYwCFjACFjAIGABg4AFDAIWMAIWMAhYwCBgASNgAYOABQwCFjAIWMAIWMAgYAHDLAF/vgsQqgzyRwIkndCAgEHAgIABAQMCBgEDAgYEDAgYBAwIGBAwCBgQMCBgQMAgYGBIBxSnhEmgDIN3AAAAAElFTkSuQmCC'
 
 const visualMixed = (): ChatMessage[] => [
   {
