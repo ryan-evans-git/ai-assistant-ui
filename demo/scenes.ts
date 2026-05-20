@@ -387,9 +387,13 @@ const visualKpi = (): ChatMessage[] => [
   },
 ]
 
-// 1×1 transparent PNG — the smallest valid base64 image.
+// Small 32×20 PNG: four ascending blue bars on a grey background.
+// Stand-in for an uploaded chart image in screenshots — the 1×1
+// transparent placeholder we shipped originally was technically
+// correct but rendered as an empty box, which read in screenshots
+// as a broken image rather than a successful upload preview.
 const TINY_PNG_DATA_URI =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAAC0lEQVR42mNgAAIAAAUAAen63NgAAAAASUVORK5CYII='
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAUCAIAAABj86gYAAAALUlEQVR42mP4/OUbTRHDqAXDxwLrJuxoBFqAy6ARaAGpBg1jC6hl0KgFI9gCAJCBoaxYlm0FAAAAAElFTkSuQmCC'
 
 const visualMixed = (): ChatMessage[] => [
   {

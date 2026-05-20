@@ -136,7 +136,10 @@ body {
 /* The lib's `.aaui-panel` defaults to 500px tall — fine for short
    exchanges, but the screenshot scenes include chart visuals
    (~280px each) and need more room so the chart + surrounding
-   bubbles fit in one frame.  Applies only to the demo. */
+   bubbles fit in one frame.  Applies only to the demo.
+   1100px accommodates the worst case (the `visual-mixed` scene:
+   KPI + bar chart + three-row table + narration ≈ 950px of
+   content).  Earlier 760px clipped the table off the bottom. */
 .demo-shell__bar-wrap > .aaui-panel {
-  height: 760px;
+  height: 1100px;
 }
