@@ -40,6 +40,18 @@ component code.
 | Conversation switcher — chip in header | [`switcher-list.png`](docs/screenshots/switcher-list.png) |
 | Conversation switcher — dropdown open | [`switcher-open.png`](docs/screenshots/switcher-open.png) |
 | Conversation switcher — first run (no prior chats) | [`switcher-empty.png`](docs/screenshots/switcher-empty.png) |
+| Workflow — multi-step run in flight (with recording id) | [`workflow-running.png`](docs/screenshots/workflow-running.png) |
+| Workflow — paused for HITL confirmation mid-run | [`workflow-confirm.png`](docs/screenshots/workflow-confirm.png) |
+| Workflow — replay of a recorded run (no live side effects) | [`workflow-replay.png`](docs/screenshots/workflow-replay.png) |
+| Workflow — graph viz (flowchart) of a recorded run | [`workflow-graph.png`](docs/screenshots/workflow-graph.png) |
+| Workflow — Gantt viz of step timings | [`workflow-gantt.png`](docs/screenshots/workflow-gantt.png) |
+
+The five `workflow-*` scenes are demos of how the chat surface looks
+when the host wires in features from
+[`ai-assistant-client`](https://github.com/ryan-evans-git/ai-assistant-client):
+multi-step workflows with `emit_status` updates,
+`pause_for_confirmation` HITL gates, transcript recording, replay, and
+the Mermaid graph / Gantt outputs of the recorded run.
 
 ## What it gives you
 
